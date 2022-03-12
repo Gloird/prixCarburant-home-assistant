@@ -8,22 +8,22 @@ from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import CONF_ELEVATION, CONF_LATITUDE, CONF_LONGITUDE
 from homeassistant.helpers.entity import Entity
 
-ATTR_ID = "Station ID"
-ATTR_GASOIL = 'Gasoil'
-ATTR_E95 = 'E95'
-ATTR_E98 = 'E98'
-ATTR_E10 = 'E10'
-ATTR_GPL = 'GPLc'
-ATTR_E85 = 'E85'
-ATTR_GASOIL_LAST_UPDATE = 'Last Update Gasoil'
-ATTR_E95_LAST_UPDATE= 'Last Update E95'
-ATTR_E98_LAST_UPDATE = 'Last Update E98'
-ATTR_E10_LAST_UPDATE = 'Last Update E10'
-ATTR_GPL_LAST_UPDATE = 'Last Update GPLc'
-ATTR_E85_LAST_UPDATE = 'Last Update E85'
-ATTR_ADDRESS = "Station Address"
-ATTR_NAME = "Station name"
-ATTR_LAST_UPDATE = "Last update"
+ATTR_ID = "station_id"
+ATTR_GASOIL = 'gasoil'
+ATTR_E95 = 'e95'
+ATTR_E98 = 'e98'
+ATTR_E10 = 'e10'
+ATTR_GPL = 'gplc'
+ATTR_E85 = 'e85'
+ATTR_GASOIL_LAST_UPDATE = 'last_update_gasoil'
+ATTR_E95_LAST_UPDATE= 'last_update_e95'
+ATTR_E98_LAST_UPDATE = 'last_update_e98'
+ATTR_E10_LAST_UPDATE = 'last_update_e10'
+ATTR_GPL_LAST_UPDATE = 'last_update_gplc'
+ATTR_E85_LAST_UPDATE = 'last_update_e85'
+ATTR_ADDRESS = "station_address"
+ATTR_NAME = "station_name"
+ATTR_LAST_UPDATE = "last_update"
 
 CONF_MAX_KM = 'maxDistance'
 CONF_SCAN_INTERVAL = 'scanInterval'
@@ -166,7 +166,7 @@ class PrixCarburant(Entity):
         self.station = myStation.get(self.station.id)
         if self.lastUpdate != self.client.lastUpdate.strftime('%Y-%m-%d'):
             logging.debug("[UPDATE]["+self.station.id+"] les données on été mise a jour - "+ str(self.lastUpdate))
-            
+
         self.lastUpdate=self.client.lastUpdate
 
         self._state = self.station.gazoil['valeur']
