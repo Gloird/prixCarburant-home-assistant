@@ -102,6 +102,7 @@ class PrixCarburant(Entity):
         self._icon = icon
         self._state = self.station.gazoil['valeur']
         self.lastUpdate = self.client.lastUpdate
+        self.lastUpdateTech = self.client.lastUpdate
         self._unique_id = "PrixCarburant_" + self.station.id
 
     @property
@@ -149,7 +150,8 @@ class PrixCarburant(Entity):
             ATTR_GPL_LAST_UPDATE: self.station.gpl['maj'],
             ATTR_ADDRESS: self.station.adress,
             ATTR_NAME: self.station.name,
-            ATTR_LAST_UPDATE: self.client.lastUpdate
+            ATTR_LAST_UPDATE: self.client.lastUpdate.strftime(
+                '%Y-%m-%d %H:%M:%S')
         }
         logging.debug("[UPDATE]["+self.station.id +
                       "] Mise a jour des attrs - "+str(attrs))
@@ -167,7 +169,7 @@ class PrixCarburant(Entity):
         list.append(str(self.station.id))
         myStation = self.client.extractSpecificStation(list)
         self.station = myStation.get(self.station.id)
-        if self.lastUpdate != self.client.lastUpdate.strftime('%Y-%m-%d'):
+        if self.lastUpdate != self.client.lastUpdate:
             logging.debug("[UPDATE]["+self.station.id +
                           "] les données on changer - " + str(self.lastUpdate))
 
