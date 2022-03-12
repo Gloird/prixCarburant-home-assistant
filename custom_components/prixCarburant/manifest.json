@@ -1,7 +1,7 @@
 {
   "domain": "prixCarburant-Gloird",
   "name": "prixCarburant-Gloird",
-  "version": "0.2",
+  "version": "0.3",
   "documentation": "https://github.com/Gloird/prixCarburant-home-assistant/blob/master/README.md",
   "issue_tracker": "https://github.com/Gloird/prixCarburant-home-assistant/issues",
   "dependencies": [],
