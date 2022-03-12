@@ -57,7 +57,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if not scanInterval:
         logging.info("[prixCarburantLoad] pas d'interval custom - 1h")
     else:
-        logging.info("[prixCarburantLoad] interval positionner à "+scanInterval)
+        logging.info("[prixCarburantLoad] interval positionner à "+str(scanInterval))
         SCAN_INTERVAL=timedelta(scanInterval)
 
 
