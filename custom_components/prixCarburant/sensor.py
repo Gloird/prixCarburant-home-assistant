@@ -47,7 +47,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     from prixCarburantClient.prixCarburantClient import PrixCarburantClient
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
     logging.info("[prixCarburantLoad] start")
-    """Setup the sensor platform."""
+    """Configurer la plate-forme de capteurs."""
     latitude = config.get(CONF_LATITUDE, hass.config.latitude)
     longitude = config.get(CONF_LONGITUDE, hass.config.longitude)
     maxDistance = config.get(CONF_MAX_KM)
@@ -71,11 +71,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     if not listToExtract:
         logging.info(
-            "[prixCarburantLoad] No station list, find nearest station")
+            "[prixCarburantLoad] Pas de liste de stations, trouver la station la plus proche")
         stations = client.foundNearestStation()
     else:
         logging.info(
-            "[prixCarburantLoad] Station list is defined, extraction in progress")
+            "[prixCarburantLoad] La liste des stations est définie, extraction en cours")
         list = []
         for station in listToExtract:
             list.append(str(station))
@@ -90,10 +90,10 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
 
 class PrixCarburant(Entity):
-    """Representation of a Sensor."""
+    """Représentation d'un capteur."""
 
     def __init__(self, station, client, icon):
-        """Initialize the sensor."""
+        """Initialiser le capteur."""
         self._state = None
         self.station = station
         self.client = client
@@ -105,32 +105,32 @@ class PrixCarburant(Entity):
 
     @property
     def name(self):
-        """Return the name of the sensor."""
+        """Renvoie le nom du capteur."""
         return 'PrixCarburant_' + self.station.id
 
     @property
     def state(self):
-        """Return the state of the sensor."""
+        """Renvoyer l'état du capteur."""
         return self._state
 
     @property
     def unit_of_measurement(self):
-        """Return the unit of measurement."""
+        """Renvoyer l'unité de mesure."""
         return "€"
 
     @property
     def unique_id(self) -> str:
-        """Return the unique ID for this sensor."""
+        """Renvoie l'identifiant unique de ce capteur."""
         return f"{self._unique_id}"
 
     @property
     def icon(self) -> str:
-        """Return the mdi icon of the entity."""
+        """Renvoie l'icône mdi de l'entité."""
         return self._icon
 
     @property
-    def device_state_attributes(self):
-        """Return the device state attributes of the last update."""
+    def extra_state_attributes(self):
+        """Renvoyer les attributs d'état de l'appareil de la dernière mise à jour."""
 
         attrs = {
             ATTR_ID: self.station.id,
@@ -153,9 +153,9 @@ class PrixCarburant(Entity):
         return attrs
 
     def update(self):
-        """Fetch new state data for the sensor.
+        """Récupérer de nouvelles données d'état pour le capteur.
 
-        This is the only method that should fetch new data for Home Assistant.
+         C'est la seule méthode qui devrait récupérer de nouvelles données pour Home Assistant.
         """
 
         self.client.reloadIfNecessary()
@@ -164,6 +164,9 @@ class PrixCarburant(Entity):
         list.append(str(self.station.id))
         myStation = self.client.extractSpecificStation(list)
         self.station = myStation.get(self.station.id)
+        if self.lastUpdate != self.client.lastUpdate.strftime('%Y-%m-%d'):
+            logging.debug("[UPDATE]["+self.station.id+"] les données on été mise a jour - "+ str(self.lastUpdate))
+            
         self.lastUpdate=self.client.lastUpdate
 
         self._state = self.station.gazoil['valeur']
