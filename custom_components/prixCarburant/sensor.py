@@ -95,7 +95,7 @@ class PrixCarburant(Entity):
     def __init__(self, station, client, icon):
         """Initialiser le capteur."""
 
-        logging.debug("[UPDATE]["+station.id+"] Création du sensor")
+        logging.info("[UPDATE]["+station.id+"] Création du sensor")
         self._state = None
         self.station = station
         self.client = client
@@ -153,8 +153,8 @@ class PrixCarburant(Entity):
             ATTR_LAST_UPDATE: self.client.lastUpdate.strftime(
                 '%Y-%m-%d %H:%M:%S')
         }
-        logging.debug("[UPDATE]["+self.station.id +
-                      "] Mise a jour des attrs - "+str(attrs))
+        logging.info("[UPDATE]["+self.station.id +
+                     "] Mise a jour des attrs - "+str(attrs))
         return attrs
 
     def update(self):
@@ -164,14 +164,14 @@ class PrixCarburant(Entity):
         """
 
         self.client.reloadIfNecessary()
-        logging.debug("[UPDATE]["+self.station.id+"] mise a jour du sensor")
+        logging.info("[UPDATE]["+self.station.id+"] mise a jour du sensor")
         list = []
         list.append(str(self.station.id))
         myStation = self.client.extractSpecificStation(list)
         self.station = myStation.get(self.station.id)
         if self.lastUpdate != self.client.lastUpdate:
-            logging.debug("[UPDATE]["+self.station.id +
-                          "] les données on changer - " + str(self.lastUpdate))
+            logging.info("[UPDATE]["+self.station.id +
+                         "] les données on changer - " + str(self.lastUpdate))
 
         self.lastUpdate = self.client.lastUpdate
 
