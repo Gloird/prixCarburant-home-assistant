@@ -26,6 +26,7 @@ ATTR_NAME = "Station name"
 ATTR_LAST_UPDATE = "Last update"
 
 CONF_MAX_KM = 'maxDistance'
+CONF_SCAN_INTERVAL = 'scanInterval'
 CONF_STATION_ID = 'stationID'
 
 SCAN_INTERVAL = timedelta(seconds=3600)
@@ -35,6 +36,7 @@ SCAN_INTERVAL = timedelta(seconds=3600)
 # Validation of the user's configuration
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_MAX_KM, default=10): cv.positive_int,
+    vol.Optional(CONF_SCAN_INTERVAL, default=3600): cv.positive_int,
     vol.Optional(CONF_LATITUDE): cv.latitude,
     vol.Optional(CONF_LONGITUDE): cv.longitude,
     vol.Optional(CONF_STATION_ID, default=[]): cv.ensure_list
@@ -50,6 +52,14 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     longitude = config.get(CONF_LONGITUDE, hass.config.longitude)
     maxDistance = config.get(CONF_MAX_KM)
     listToExtract = config.get(CONF_STATION_ID)
+    scanInterval = config.get(CONF_SCAN_INTERVAL)
+
+    if not scanInterval:
+        logging.info("[prixCarburantLoad] pas d'interval custom - 1h")
+    else:
+        logging.info("[prixCarburantLoad] interval positionner à "+scanInterval)
+        SCAN_INTERVAL=timedelta(scanInterval)
+
 
     homeLocation = [{
         'lat': str(latitude),
@@ -138,7 +148,7 @@ class PrixCarburant(Entity):
             ATTR_GPL_LAST_UPDATE: self.station.gpl['maj'],
             ATTR_ADDRESS: self.station.adress,
             ATTR_NAME: self.station.name,
-            ATTR_LAST_UPDATE: self.client.lastUpdate.strftime('%Y-%m-%d')
+            ATTR_LAST_UPDATE: self.client.lastUpdate
         }
         return attrs
 
@@ -149,15 +159,12 @@ class PrixCarburant(Entity):
         """
 
         self.client.reloadIfNecessary()
-        if self.client.lastUpdate == self.lastUpdate:
-            logging.debug("[UPDATE]["+self.station.id+"] valeur a jour") 
-        else:
-            logging.debug("[UPDATE]["+self.station.id+"] valeur pas a jour")
-            list = []
-            list.append(str(self.station.id))
-            myStation = self.client.extractSpecificStation(list)
-            self.station = myStation.get(self.station.id)
-            self.lastUpdate=self.client.lastUpdate
+        logging.debug("[UPDATE]["+self.station.id+"]")
+        list = []
+        list.append(str(self.station.id))
+        myStation = self.client.extractSpecificStation(list)
+        self.station = myStation.get(self.station.id)
+        self.lastUpdate=self.client.lastUpdate
 
         self._state = self.station.gazoil['valeur']
         self.client.clean()

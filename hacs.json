@@ -1,8 +1,10 @@
 {
-  "name": "prixCarburant",
+  "name": "prixCarburant-Gloird",
   "country": "FR",
-  "domains": ["sensor"],
+  "domains": [
+    "sensor"
+  ],
   "render_readme": true,
-  "documentation": "https://github.com/ryann72/prixCarburant-home-assistant",
+  "documentation": "https://github.com/Gloird/prixCarburant-home-assistant",
   "homeassistant": "0.99.0"
 }

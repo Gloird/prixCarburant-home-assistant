@@ -1,11 +1,12 @@
-
 {
-  "domain": "prixCarburant",
-  "name": "prixCarburant",
-  "version": "1.1",
-  "documentation": "https://github.com/ryann72/prixCarburant-home-assistant/blob/master/README.md",
-  "issue_tracker": "https://github.com/max5962/prixCarburant-home-assistant/issues",
+  "domain": "prixCarburant-Gloird",
+  "name": "prixCarburant-Gloird",
+  "version": "0.1",
+  "documentation": "https://github.com/Gloird/prixCarburant-home-assistant/blob/master/README.md",
+  "issue_tracker": "https://github.com/Gloird/prixCarburant-home-assistant/issues",
   "dependencies": [],
   "codeowners": [],
-  "requirements": ["Prix-Carburant-FR-Client==1.0.3"]
+  "requirements": [
+    "Prix-Carburant-FR-Client==1.0.3"
+  ]
 }
