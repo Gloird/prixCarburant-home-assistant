@@ -83,7 +83,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         stations = client.extractSpecificStation(list)
 
     logging.info("[prixCarburantLoad] " +
-                 str(len(stations)) + " stations found")
+                 str(len(stations)) + " stations trouvées")
     client.clean()
     for station in stations:
         add_devices([PrixCarburant(stations.get(station), client,"mdi:currency-eur")])
@@ -94,6 +94,8 @@ class PrixCarburant(Entity):
 
     def __init__(self, station, client, icon):
         """Initialiser le capteur."""
+        
+        logging.debug("[UPDATE]["+self.station.id+"] Création du sensor - "+str(self.station))
         self._state = None
         self.station = station
         self.client = client
@@ -150,6 +152,7 @@ class PrixCarburant(Entity):
             ATTR_NAME: self.station.name,
             ATTR_LAST_UPDATE: self.client.lastUpdate
         }
+        logging.debug("[UPDATE]["+self.station.id+"] Mise a jour des attrs - "+str(attrs))
         return attrs
 
     def update(self):
@@ -159,13 +162,13 @@ class PrixCarburant(Entity):
         """
 
         self.client.reloadIfNecessary()
-        logging.debug("[UPDATE]["+self.station.id+"]")
+        logging.debug("[UPDATE]["+self.station.id+"] mise a jour du sensor")
         list = []
         list.append(str(self.station.id))
         myStation = self.client.extractSpecificStation(list)
         self.station = myStation.get(self.station.id)
         if self.lastUpdate != self.client.lastUpdate.strftime('%Y-%m-%d'):
-            logging.debug("[UPDATE]["+self.station.id+"] les données on été mise a jour - "+ str(self.lastUpdate))
+            logging.debug("[UPDATE]["+self.station.id+"] les données on changer - "+ str(self.lastUpdate))
 
         self.lastUpdate=self.client.lastUpdate
 
