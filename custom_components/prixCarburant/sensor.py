@@ -16,7 +16,7 @@ ATTR_E10 = 'e10'
 ATTR_GPL = 'gplc'
 ATTR_E85 = 'e85'
 ATTR_GASOIL_LAST_UPDATE = 'last_update_gasoil'
-ATTR_E95_LAST_UPDATE= 'last_update_e95'
+ATTR_E95_LAST_UPDATE = 'last_update_e95'
 ATTR_E98_LAST_UPDATE = 'last_update_e98'
 ATTR_E10_LAST_UPDATE = 'last_update_e10'
 ATTR_GPL_LAST_UPDATE = 'last_update_gplc'
@@ -30,7 +30,6 @@ CONF_SCAN_INTERVAL = 'scanInterval'
 CONF_STATION_ID = 'stationID'
 
 SCAN_INTERVAL = timedelta(seconds=3600)
-
 
 
 # Validation of the user's configuration
@@ -57,9 +56,9 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if not scanInterval:
         logging.info("[prixCarburantLoad] pas d'interval custom - 1h")
     else:
-        logging.info("[prixCarburantLoad] interval positionner à "+str(scanInterval))
-        SCAN_INTERVAL=timedelta(scanInterval)
-
+        logging.info(
+            "[prixCarburantLoad] interval positionner à "+str(scanInterval))
+        SCAN_INTERVAL = timedelta(scanInterval)
 
     homeLocation = [{
         'lat': str(latitude),
@@ -86,7 +85,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                  str(len(stations)) + " stations trouvées")
     client.clean()
     for station in stations:
-        add_devices([PrixCarburant(stations.get(station), client,"mdi:currency-eur")])
+        add_devices(
+            [PrixCarburant(stations.get(station), client, "mdi:currency-eur")])
 
 
 class PrixCarburant(Entity):
@@ -94,16 +94,15 @@ class PrixCarburant(Entity):
 
     def __init__(self, station, client, icon):
         """Initialiser le capteur."""
-        
-        logging.debug("[UPDATE]["+self.station.id+"] Création du sensor")
+
+        logging.debug("[UPDATE]["+station.id+"] Création du sensor")
         self._state = None
         self.station = station
         self.client = client
-        self._icon = icon        
+        self._icon = icon
         self._state = self.station.gazoil['valeur']
-        self.lastUpdate=self.client.lastUpdate
+        self.lastUpdate = self.client.lastUpdate
         self._unique_id = "PrixCarburant_" + self.station.id
-
 
     @property
     def name(self):
@@ -133,7 +132,7 @@ class PrixCarburant(Entity):
     @property
     def extra_state_attributes(self):
         """Renvoyer les attributs d'état de l'appareil de la dernière mise à jour."""
-        
+
         attrs = {
             ATTR_ID: self.station.id,
             ATTR_GASOIL: self.station.gazoil['valeur'],
@@ -152,7 +151,8 @@ class PrixCarburant(Entity):
             ATTR_NAME: self.station.name,
             ATTR_LAST_UPDATE: self.client.lastUpdate
         }
-        logging.debug("[UPDATE]["+self.station.id+"] Mise a jour des attrs - "+str(attrs))
+        logging.debug("[UPDATE]["+self.station.id +
+                      "] Mise a jour des attrs - "+str(attrs))
         return attrs
 
     def update(self):
@@ -168,9 +168,10 @@ class PrixCarburant(Entity):
         myStation = self.client.extractSpecificStation(list)
         self.station = myStation.get(self.station.id)
         if self.lastUpdate != self.client.lastUpdate.strftime('%Y-%m-%d'):
-            logging.debug("[UPDATE]["+self.station.id+"] les données on changer - "+ str(self.lastUpdate))
+            logging.debug("[UPDATE]["+self.station.id +
+                          "] les données on changer - " + str(self.lastUpdate))
 
-        self.lastUpdate=self.client.lastUpdate
+        self.lastUpdate = self.client.lastUpdate
 
         self._state = self.station.gazoil['valeur']
         self.client.clean()
