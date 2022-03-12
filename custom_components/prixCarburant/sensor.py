@@ -95,7 +95,6 @@ class PrixCarburant(Entity):
     def __init__(self, station, client, icon):
         """Initialiser le capteur."""
         
-        logging.debug("[UPDATE]["+self.station.id+"] Création du sensor - "+str(self.station))
         self._state = None
         self.station = station
         self.client = client
@@ -103,6 +102,7 @@ class PrixCarburant(Entity):
         self._state = self.station.gazoil['valeur']
         self.lastUpdate=self.client.lastUpdate
         self._unique_id = "PrixCarburant_" + self.station.id
+        logging.debug("[UPDATE]["+self.station.id+"] Création du sensor - "+str(self.attr(self)))
 
 
     @property
@@ -130,10 +130,7 @@ class PrixCarburant(Entity):
         """Renvoie l'icône mdi de l'entité."""
         return self._icon
 
-    @property
-    def extra_state_attributes(self):
-        """Renvoyer les attributs d'état de l'appareil de la dernière mise à jour."""
-
+    def attr(self):
         attrs = {
             ATTR_ID: self.station.id,
             ATTR_GASOIL: self.station.gazoil['valeur'],
@@ -154,6 +151,11 @@ class PrixCarburant(Entity):
         }
         logging.debug("[UPDATE]["+self.station.id+"] Mise a jour des attrs - "+str(attrs))
         return attrs
+
+    @property
+    def extra_state_attributes(self):
+        """Renvoyer les attributs d'état de l'appareil de la dernière mise à jour."""
+        return self.attr(self)
 
     def update(self):
         """Récupérer de nouvelles données d'état pour le capteur.
