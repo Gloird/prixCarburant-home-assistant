@@ -1,1 +1,1 @@
-REQUIREMENTS  = ['Prix-Carburant-FR-Client==1.0.3']
+REQUIREMENTS = ['Prix-Carburant-FR-Gloird-Client==0.0.1']
