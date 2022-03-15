@@ -15,7 +15,7 @@ Dans HACS, cliquer sur ... puis depots personnalisés
 
 Ajouter :
 
-- URL : https://github.com/ryann72/prixCarburant-home-assistant
+- URL : https://github.com/Gloird/prixCarburant-home-assistant
 - Catégorie : Intégration
 
 ## Configuration
@@ -41,91 +41,80 @@ sensor:
 
 Exemple de données extraites :
 ```
-Station ID: '44300020'
-Gasoil: '1.519'
-Last Update Gasoil: '2021-02-23T19:23:06'
-E95: '1.622'
-Last Update E95: '2021-02-23T19:23:07'
-E98: '1.685'
-Last Update E98: '2021-02-23T19:23:08'
-E10: '1.563'
-Last Update E10: '2021-02-23T19:23:07'
-E85: None
-Last Update E85: ''
-GPLc: '0.909'
-Last Update GPLc: '2021-02-23T19:23:07'
-Station Address: 162 Route de Rennes Nantes
-Station name: undefined
-Last update: '2021-02-24'
+station_id: 79000001
+gasoil: 1.999
+last_update_gasoil: 2022-03-14 11:25:37
+e95: 1.999
+last_update_e95: 2022-03-14 11:25:38
+e98: None
+last_update_e98: 
+e10: 1.949
+last_update_e10: 2022-03-14 11:25:38
+e85: 0.999
+last_update_e85: 2022-03-14 11:25:38
+gplc: None
+last_update_gplc: 
+station_address: 80 Avenue SaintJean d'Angély 79000 NIORT
+station_name: Carrefour Market
+longitude: -0.466
+latitude: 46.318
+last_update: 2022-03-15 00:00:00
 unit_of_measurement: €
-friendly_name: PrixCarburant_44300020
-icon: 'mdi:currency-eur'
+icon: mdi:currency-eur
+friendly_name: PrixCarburant_79000001
 ```
+
+Exemple de donnée pour un type de carburant:
+
+```
+station_id: 79000001
+e10: 1.949
+last_update_e10: 2022-03-14 11:25:38
+station_address: 80 Avenue SaintJean d'Angély 79000 NIORT
+station_name: Carrefour Market
+longitude: -0.466
+latitude: 46.318
+last_update: 2022-03-15 00:00:00
+unit_of_measurement: €
+icon: mdi:currency-eur
+friendly_name: PrixCarburant_79000001_e10
+```
+
 ### Configuration d'affichage dans Home Assistant
 
-#### via carte markdown statique
+#### via flex-table-card
 
-Permet d'afficher le prix des différents carburants proposés par la station.
+Permet d'afficher le prix dans l'ordre
 
 La date d'actualisation des prix est également affichée
 ```
-{{state_attr("sensor.prixcarburant_44300020", "Station name")}} - Maj : {{state_attr("sensor.prixcarburant_44300020", "Last update")}}
-{%- if state_attr("sensor.prixcarburant_44300020", "Gasoil") != "None"  %}
-Gasoil : {{ state_attr("sensor.prixcarburant_44300020", "Gasoil") }} €
-{%- endif %}
-{%- if state_attr("sensor.prixcarburant_44300020", "E10") != "None"  %}
-E10 : {{ state_attr("sensor.prixcarburant_44300020", "E10") }} €
-{%- endif %}
-{%- if state_attr("sensor.prixcarburant_44300020", "E95") != "None"  %}
-SP95 : {{ state_attr("sensor.prixcarburant_44300020", "E95") }} €
-{%- endif %}
-{%- if   state_attr("sensor.prixcarburant_44300020", "E98") != "None"  %}
-SP98 : {{ state_attr("sensor.prixcarburant_44300020", "E98") }} €
-{%- endif %}
-{%- if   state_attr("sensor.prixcarburant_44300020", "GPLc") != "None"  %}
-GPLc : {{ state_attr("sensor.prixcarburant_44300020", "GPLc") }} €
-{%- endif %}
+type: custom:flex-table-card
+title: Prix Gasoil
+entities:
+  include:
+    - sensor.prixcarburant_79370001
+    - sensor.prixcarburant_79370002
+    - sensor.prixcarburant_79000002
+    - sensor.prixcarburant_79000008
+    - sensor.prixcarburant_79000012
+    - sensor.prixcarburant_79230003
+sort_by: gasoil
+strict: true
+clickable: true
+columns:
+  - data: station_name
+    name: Nom
+  - data: gasoil
+    name: Gasoil
+    suffix: ' €'
+  - data: last_update_gasoil
+    modify: >-
+      new Number((Date.now() / 86400000) - (Date.parse(x) /
+      86400000)).toFixed(0)
+    name: Date
+    suffix: ' Jours'
 ```
 
-#### via carte markdown dynamique
-
-![alt text](https://forum.hacf.fr/uploads/default/original/2X/6/68418b4f3fcc38b584ce3f56efe0121c251f5d6b.png)
-
-Le but est d'avoir un groupe de station essence et de trié automatiquement la liste sur le prix.
-
-* Crée un groupe avec les stations essences désirer
-```
-group:
-  station_essence:
-  - sensor.prixcarburant_38220002
-  - sensor.prixcarburant_38320006
-  - sensor.prixcarburant_38800003
-  - sensor.prixcarburant_38700003
-```
-* Carte markdown dynamique
-```
-type: markdown
-content: >-
-  {% set update = states('sensor.date') %}
-
-  {% set midnight = now().replace(hour=0, minute=0, second=0,
-  microsecond=0).timestamp() %}
-
-  {% set sorted_station_essence = "group.carburant" | expand |
-  sort(attribute='attributes.Gasoil') %}
-    | Station | &nbsp;&nbsp;&nbsp;&nbsp;Gasoil&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;Gpl&nbsp;&nbsp;&nbsp;&nbsp; | Update |
-    | :------- | :----: | :----: | ------: |
-  {% for station in sorted_station_essence %}| {{-
-  state_attr(station.entity_id, 'Station name') -}}
-    |{%- if state_attr(station.entity_id, "Gasoil") == "None" -%}-{%- else -%}{{- state_attr(station.entity_id, 'Gasoil') -}}{%- endif -%}
-    |{%- if state_attr(station.entity_id, "GPLc") == "None" -%}-{%- else -%}{{- state_attr(station.entity_id, 'GPLc') -}}{%- endif -%}
-  {%- set event = state_attr(station.entity_id,'Last Update Gasoil') |
-  as_timestamp -%}
-  {%- set delta = ((event - midnight) // 86400) | int -%}
-    |{{ -delta }} Jours|
-  {% endfor %}
-title: Prix des carburants
-```
 
 #### via carte multiple-entity-row
 
@@ -135,7 +124,7 @@ title: Prix des carburants
 type: entities
 title: Prix carburants
 entities:
-  - entity: sensor.prixcarburant_12340001
+  - entity: sensor.prixcarburant_79370001
     type: custom:multiple-entity-row
     name: Auchan
     icon: mdi:gas-station
@@ -150,7 +139,7 @@ entities:
       - attribute: GPLc
         name: GPL
         unit: €
-  - entity: sensor.prixcarburant_12340003
+  - entity: sensor.prixcarburant_79370002
     type: custom:multiple-entity-row
     name: E.Leclerc
     icon: mdi:gas-station
@@ -160,6 +149,6 @@ entities:
 
 # Information
 
-Source code du client si vous souhaitez contribuer : "https://github.com/ryann72/essence"
+Source code du client si vous souhaitez contribuer : "https://github.com/Gloird/essence"
 
 Il s'agit d'un fork de https://github.com/max5962/prixCarburant-home-assistant, mis à jour afin de recuperer le E85 et le GPLc
