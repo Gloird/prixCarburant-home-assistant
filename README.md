@@ -83,6 +83,7 @@ friendly_name: PrixCarburant_79000001_e10
 ### Configuration d'affichage dans Home Assistant
 
 #### via flex-table-card
+![alt text](https://i.ibb.co/zHFgDYM/Capture.png)
 
 Permet d'afficher le prix dans l'ordre
 
