@@ -152,4 +152,7 @@ entities:
 
 Source code du client si vous souhaitez contribuer : "https://github.com/Gloird/essence"
 
-Il s'agit d'un fork de https://github.com/max5962/prixCarburant-home-assistant, mis à jour afin de recuperer le E85 et le GPLc
+Il s'agit d'un fork de https://github.com/max5962/prixCarburant-home-assistant,
+
+* Changement de la source des prix pour avoir des prix mise à jour instantanément plutôt que 1 fois par jour
+* Ajout de la positon géographique de la station d'essence
